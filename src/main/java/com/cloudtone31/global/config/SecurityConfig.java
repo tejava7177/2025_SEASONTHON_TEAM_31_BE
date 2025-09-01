@@ -34,32 +34,29 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/",
-                                "/health",
-                                "/actuator/**",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                                "/", "/health", "/actuator/**", "/error",
+                                "/swagger-ui/**", "/v3/api-docs/**",
+                                "/oauth2/**", "/login/**",
+                                "/v1/auth/kakao/url", "/v1/auth/kakao/callback"
                         ).permitAll()
-                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/v1/auth/kakao/logout").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
-                        // registrationId 가 kakao 이므로 아래 경로가 자동 생성됨
                         .loginPage("/oauth2/authorization/kakao")
                         .userInfoEndpoint(user -> user.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                         .failureHandler(oAuth2FailureHandler)
                 )
-                // SecurityConfig의 logout() 부분 강화 (개발 중 편의용)
                 .logout(logout -> logout
-                        .logoutUrl("/logout")                       // 기본 POST /logout
-                        .logoutSuccessUrl("http://localhost:3000/logout/success")
+                        .logoutUrl("/v1/auth/kakao/logout") // 문서 규격에 맞춤
                         .clearAuthentication(true)
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
+                        // Postman/백엔드 통신에선 리다이렉트 대신 204로 끝내면 편합니다.
+                        .logoutSuccessHandler((req, res, auth) -> res.setStatus(204))
                 )
                 .exceptionHandling(ex -> ex
-                        // 인증 안 된 상태에서 보호된 API 접근 시 401
                         .authenticationEntryPoint((req, res, e) -> res.sendError(401))
                 );
 
