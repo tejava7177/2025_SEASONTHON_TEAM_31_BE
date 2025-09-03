@@ -16,16 +16,11 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
-
-    private static final String FRONT_REDIRECT = "http://localhost:3000/login/success";
-
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        Authentication authentication)
-            throws IOException, ServletException {
-
-        String msg = URLEncoder.encode("kakao login success", StandardCharsets.UTF_8);
-        response.sendRedirect(FRONT_REDIRECT + "?msg=" + msg);
+    public void onAuthenticationSuccess(HttpServletRequest req,
+                                        HttpServletResponse res,
+                                        Authentication authentication) throws IOException {
+        // 프런트가 없어도 바로 내 API에서 로그인 상태 확인 가능
+        res.sendRedirect(req.getContextPath() + "/users/me"); // 예: "/users/me"
     }
 }

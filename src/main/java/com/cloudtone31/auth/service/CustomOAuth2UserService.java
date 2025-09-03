@@ -1,5 +1,6 @@
-package com.cloudtone31.auth;
+package com.cloudtone31.auth.service;
 
+import com.cloudtone31.auth.KakaoAttributes;
 import com.cloudtone31.user.domain.User;
 import com.cloudtone31.user.repo.UserRepository;
 import lombok.RequiredArgsConstructor;

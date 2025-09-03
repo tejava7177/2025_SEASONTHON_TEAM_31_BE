@@ -1,6 +1,6 @@
 package com.cloudtone31.global.config;
 
-import com.cloudtone31.auth.CustomOAuth2UserService;
+import com.cloudtone31.auth.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,7 +39,8 @@ public class SecurityConfig {
                                 "/oauth2/**", "/login/**",
                                 "/v1/auth/kakao/url", "/v1/auth/kakao/callback"
                         ).permitAll()
-                        .requestMatchers("/v1/auth/kakao/logout").authenticated()
+                        .requestMatchers("/users/me","/v1/auth/kakao/logout").authenticated()
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/users/delete").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
@@ -56,9 +57,12 @@ public class SecurityConfig {
                         // Postman/백엔드 통신에선 리다이렉트 대신 204로 끝내면 편합니다.
                         .logoutSuccessHandler((req, res, auth) -> res.setStatus(204))
                 )
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((req, res, e) -> res.sendError(401))
-                );
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((req, res, e) -> {
+                    res.setStatus(401);
+                    res.setContentType("application/json;charset=UTF-8");
+                    // {"success": false, "message": "인증이 필요합니다."}
+                    res.getWriter().write("{\"success\":false,\"message\":\"인증이 필요합니다.\"}");
+                }));
 
         return http.build();
     }
