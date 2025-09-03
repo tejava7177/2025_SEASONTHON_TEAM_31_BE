@@ -40,6 +40,7 @@ public class SecurityConfig {
                                 "/v1/auth/kakao/url", "/v1/auth/kakao/callback"
                         ).permitAll()
                         .requestMatchers("/users/me","/v1/auth/kakao/logout").authenticated()
+                        .requestMatchers("/v1/auth/kakao/nickname").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/users/delete").authenticated()
                         .anyRequest().authenticated()
                 )

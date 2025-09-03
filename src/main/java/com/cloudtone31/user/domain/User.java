@@ -7,8 +7,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Getter @Builder @NoArgsConstructor @AllArgsConstructor
-@Entity @Table(name = "users", indexes = {
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "users", indexes = {
         @Index(name = "idx_users_kakao_id", columnList = "kakaoId", unique = true)
 })
 public class User {
@@ -30,4 +34,13 @@ public class User {
     private LocalDateTime updatedAt;
 
     private LocalDateTime lastLoginAt;
+
+    // === 엔티티 메서드 ===
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateLastLoginAt(LocalDateTime now) {
+        this.lastLoginAt = now;
+    }
 }
